@@ -1,0 +1,41 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 39f4947d29db4485b9e51fcebcfa241e, type: 3}
+  m_Name: Player
+  m_EditorClassIdentifier: 
+  dataList:
+  - fullBody: {fileID: 21300000, guid: 8d0c50dce6591405a84ba1bf133eb296, type: 3}
+    head: {fileID: 21300000, guid: 69639105a9ced4abbafe58aa572cacb2, type: 3}
+    body: {fileID: 21300000, guid: ef94fd9ba29b64959a77845790bd9ad3, type: 3}
+    leg: {fileID: 21300000, guid: c70960327201c4586a937c20f74df113, type: 3}
+    Weapon: {fileID: 21300000, guid: d40fd9985c18d4da4854aeda7f26f7ad, type: 3}
+  - fullBody: {fileID: 21300000, guid: 83d078d2de7e04e60bc02b1bd08aee72, type: 3}
+    head: {fileID: 21300000, guid: 645859ebd14464ef9994c3190ed44438, type: 3}
+    body: {fileID: 21300000, guid: 9a5c8f8e457dd43c190f534fb1193f4d, type: 3}
+    leg: {fileID: 21300000, guid: 6f2cb724444e1418f895b979e1891451, type: 3}
+    Weapon: {fileID: 21300000, guid: 2dea44dd64fb74894bed46b1c339c7be, type: 3}
+  - fullBody: {fileID: 21300000, guid: f2d80e19e50fb4cd091375d55e27248d, type: 3}
+    head: {fileID: 21300000, guid: 82fef0bf14c7741c79c5407277486a53, type: 3}
+    body: {fileID: 21300000, guid: 1526ba6ecc47b4ccdae6c76b1e382e17, type: 3}
+    leg: {fileID: 21300000, guid: a16f673ad091f456f91e0bdddd7878de, type: 3}
+    Weapon: {fileID: 21300000, guid: f8eb83fa82b464d45a683086f29c3392, type: 3}
+  - fullBody: {fileID: 21300000, guid: c7db7285272de4202b4ce6f50fb334f5, type: 3}
+    head: {fileID: 21300000, guid: 4a0577ad645e64dd2baebe24dcd454ab, type: 3}
+    body: {fileID: 21300000, guid: db71da362c1064e34bd688bc89c4a4a7, type: 3}
+    leg: {fileID: 21300000, guid: 4dc865ee7e5074ab5add59317ca1bba5, type: 3}
+    Weapon: {fileID: 21300000, guid: d0650be607ed34c4385ee6de291672ef, type: 3}
+  skinData:
+    fullBody: {fileID: 0}
+    head: {fileID: 0}
+    body: {fileID: 0}
+    leg: {fileID: 0}
+    Weapon: {fileID: 0}

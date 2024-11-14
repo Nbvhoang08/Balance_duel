@@ -1,9 +1,6 @@
+using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
-using Unity.VisualScripting.ReorderableList;
-using UnityEditor.Experimental.GraphView;
-using UnityEngine;
-using UnityEngine.Animations;
 
 public class PlayerMove : MonoBehaviour
 {
@@ -20,18 +17,35 @@ public class PlayerMove : MonoBehaviour
     [SerializeField] private float knockbackForce = 10f;
     [SerializeField] private float knockbackTime = 0.2f;
     [SerializeField] private LayerMask enemyLayer;
+
+    [Header("Skin Setting")]
+    [SerializeField] private Data data;
+    [SerializeField] private SpriteRenderer Head;
+    [SerializeField] private SpriteRenderer Body;
+    [SerializeField] private SpriteRenderer Leg;
+    [SerializeField] private SpriteRenderer Weapon;
+
+    [Header("Body Setting")]
+    [SerializeField] private GameObject bodyPrefab;
+    [SerializeField] private Transform body;
+    [SerializeField] private Transform head;
+    public int score;
+    private List<GameObject> spawnedBodies = new List<GameObject>();
+
     public Animator anim;
-    private float horizontalInput;
+    public float horizontalInput;
     private float currentRotation;
     private float lastMoveDirection;
     private bool hasStartedMoving;
     private bool isKnockedBack;
     private float knockbackTimeCounter;
+    private Vector3 StarPos;
     public bool isDead => currentRotation >90 || currentRotation < -90;
     [SerializeField] private float direction =1;
     private void Start()
     {
         rb = GetComponent<Rigidbody2D>();
+        StarPos = transform.position;
         if (rb == null)
         {
             Debug.LogError("Rigidbody2D component is missing!");
@@ -44,6 +58,7 @@ public class PlayerMove : MonoBehaviour
 
         // Thêm trigger cho object con nếu cần
         SetupColliders();
+        UpdateSkin();
     }
 
     private void SetupColliders()
@@ -63,7 +78,7 @@ public class PlayerMove : MonoBehaviour
         {
             if (!isKnockedBack)
             {
-                horizontalInput = Input.GetAxisRaw("Horizontal");
+                //horizontalInput = Input.GetAxisRaw("Horizontal");
 
                 if (horizontalInput != 0)
                 {
@@ -127,6 +142,15 @@ public class PlayerMove : MonoBehaviour
     {
         HandleEnemyCollision(other.gameObject);
     }
+       private void UpdateSkin()
+    {
+        Head.sprite = data.skinData.head;
+        Body.sprite = data.skinData.body;
+        Leg.sprite = data.skinData.leg;
+        Weapon.sprite = data.skinData.Weapon;
+    }
+
+
 
     // Xử lý va chạm cho cả object cha và con
     private void HandleEnemyCollision(GameObject collisionObject)
@@ -151,4 +175,30 @@ public class PlayerMove : MonoBehaviour
         isKnockedBack = true;
         knockbackTimeCounter = knockbackTime;
     }
+    void UpdateHeightBasedOnScore()
+    {
+        // Xóa các bodyPrefab cũ
+        foreach (var spawnedBody in spawnedBodies)
+        {
+            Destroy(spawnedBody);
+        }
+        spawnedBodies.Clear();
+
+        // Spawn các bodyPrefab mới dựa trên điểm số
+        for (int i = 0; i < score; i++)
+        {
+            GameObject newBody = Instantiate(bodyPrefab, body);
+            newBody.transform.localPosition = new Vector3(0, i + 1, 0); // Đặt vị trí theo trục Y
+            spawnedBodies.Add(newBody);
+        }
+
+        // Cập nhật vị trí của Head
+        head.localPosition = new Vector3(head.localPosition.x, score + 1, head.localPosition.z);
+    }
+    public void Reset()
+    {
+        currentRotation = 0;
+        transform.position = StarPos;
+    }
+    
 }
