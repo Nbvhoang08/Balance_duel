@@ -1,6 +1,8 @@
 using System.Collections;
 using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEngine;
+using UnityEngine.SocialPlatforms.Impl;
 
 public class GameManager : MonoBehaviour
 {
@@ -8,48 +10,81 @@ public class GameManager : MonoBehaviour
     public Enemy enemy;
     public int playerScore;
     public int enemyScore;
-
-    private Vector3 playerStartPosition;
-    private Vector3 enemyStartPosition;
-
+    private bool hasUpdatedScore = false;
+    private bool isResetting = false;
+    private bool isGameOver = false; 
     // Start is called before the first frame update
     void Start()
     {
         playerScore = 0;
         enemyScore = 0;
-
-        // Lưu vị trí ban đầu của Player và Enemy
-        playerStartPosition = player.transform.position;
-        enemyStartPosition = enemy.transform.position;
     }
 
+
+void Update()
+{
+    CheckGameStatus();
+    CheckWinLoseCondition();
+}
     // Update is called once per frame
-    void Update()
+ void CheckWinLoseCondition()
+{
+    if (!isGameOver)
     {
-        CheckGameStatus();
+        if(enemyScore > 3)
+        {
+            UIManager.Instance.OpenUI<LoseCanvas>();
+            Time.timeScale = 0f;
+            isGameOver = true;  // Đánh dấu game đã kết thúc
+        }
+        else if(playerScore > 3)
+        {   
+            UIManager.Instance.OpenUI<WinCanvas>();
+            Time.timeScale = 0f;
+            isGameOver = true;  // Đánh dấu game đã kết thúc
+        }
     }
+}
 
-    void CheckGameStatus()
+void CheckGameStatus()
+{
+    // Chỉ kiểm tra và cập nhật điểm nếu chưa cập nhật và không đang trong quá trình reset
+    if (!hasUpdatedScore && !isResetting)
     {
         if (player.isDead && !enemy.isDead)
         {
             enemyScore++;
-            Debug.Log("Player is dead. Enemy wins! Enemy score: " + enemyScore);
-            ResetGame();
+            enemy.score += 2;
+            hasUpdatedScore = true;
+            StartCoroutine(Reset());
         }
         else if (enemy.isDead && !player.isDead)
         {
             playerScore++;
-            Debug.Log("Enemy is dead. Player wins! Player score: " + playerScore);
-            ResetGame();
+            player.score += 2;
+            hasUpdatedScore = true;
+            StartCoroutine(Reset());
         }
     }
+}
 
-    void ResetGame()
-    {
-        // Reset trạng thái của Player và Enemy cho lần chơi tiếp theo
-        player.Reset();
-        enemy.Reset();
-    }
+IEnumerator Reset()
+{
+    // Đánh dấu đang trong quá trình reset
+    isResetting = true;
+    yield return new WaitForSeconds(1f);
+    ResetGame();
+}
+
+void ResetGame()
+{
+    // Reset trạng thái của Player và Enemy
+    player.Reset();
+    enemy.Reset();
+    
+    // Reset các biến điều khiển
+    hasUpdatedScore = false;
+    isResetting = false;
+}
 }
 

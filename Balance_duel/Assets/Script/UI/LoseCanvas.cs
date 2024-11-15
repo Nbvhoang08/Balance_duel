@@ -11,6 +11,7 @@ public class LoseCanvas : UICanvas
     {
         Time.timeScale = 1;
         StartCoroutine(returnHome());
+        SoundManager.Instance.PlayClickSound();
 
     }
     IEnumerator returnHome()
@@ -18,7 +19,8 @@ public class LoseCanvas : UICanvas
         yield return new WaitForSeconds(0.2f);
         SceneManager.LoadScene("Home");
         yield return new WaitForSeconds(0.2f);
-        UIManager.Instance.CloseUIDirectly<HomeCanvas>();
-        UIManager.Instance.OpenUI<GamePlayCanvas>();
+        UIManager.Instance.CloseUIDirectly<GamePlayCanvas>();
+        UIManager.Instance.CloseUIDirectly<LoseCanvas>();
+        UIManager.Instance.OpenUI<HomeCanvas>();
     }
 }

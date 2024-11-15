@@ -10,6 +10,7 @@ public class WinCanvas : UICanvas
     {
         Time.timeScale = 1;
         StartCoroutine(returnHome());
+        SoundManager.Instance.PlayClickSound();
 
     }
     IEnumerator returnHome()
@@ -17,7 +18,8 @@ public class WinCanvas : UICanvas
         yield return new WaitForSeconds(0.2f);
         SceneManager.LoadScene("Home");
         yield return new WaitForSeconds(0.2f);
-        UIManager.Instance.CloseUIDirectly<HomeCanvas>();
-        UIManager.Instance.OpenUI<GamePlayCanvas>();
+        UIManager.Instance.CloseUIDirectly<GamePlayCanvas>();
+        UIManager.Instance.CloseUIDirectly<WinCanvas>();
+        UIManager.Instance.OpenUI<HomeCanvas>();
     }
 }

@@ -11,6 +11,7 @@ public class HomeCanvas : UICanvas
         //StartCoroutine(Play());
         UIManager.Instance.CloseUIDirectly<HomeCanvas>();
         UIManager.Instance.OpenUI<GamePlayCanvas>();
+        SoundManager.Instance.PlayClickSound();
     }
     IEnumerator Play()
     {

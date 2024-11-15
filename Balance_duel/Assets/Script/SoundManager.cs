@@ -8,15 +8,19 @@ public class SoundManager : Singleton<SoundManager>
     
     [Header("Audio Sources")]
     [SerializeField] private AudioSource musicSource; // Cho background music
-    [SerializeField] private AudioSource sfxSource;   // Cho sound effects
+    [SerializeField] private AudioSource sfxSource; 
+    [SerializeField] private AudioSource clickSource; // Cho sound effects
 
     [Header("Audio Clips")]
     [SerializeField] private AudioClip backgroundMusic;
     [SerializeField] private AudioClip[] VFXSound;
+    [SerializeField] private AudioClip ClickSound;
+ 
     
     [Header("Volume Settings")]
     [SerializeField][Range(0f, 1f)] private float musicVolume = 0.3f;
     [SerializeField][Range(0f, 1f)] private float sfxVolume = 0.5f;
+    [SerializeField][Range(0f, 1f)] private float clickVolume = 0.5f;
     public bool TurnOn = true;
 
 
@@ -33,11 +37,13 @@ public class SoundManager : Singleton<SoundManager>
             // Thiết lập volume
             musicSource.volume = musicVolume;
             sfxSource.volume = sfxVolume;
+            clickSource.volume = clickVolume;
         }
         else
         {
             musicSource.volume = 0;
             sfxSource.volume = 0;
+            clickSource.volume = 0;
         }
         
     }
@@ -59,9 +65,18 @@ public class SoundManager : Singleton<SoundManager>
             sfxSource.playOnAwake = false;
         }
 
+        if(clickSource == null)
+        {
+            clickSource = gameObject.AddComponent<AudioSource>();
+            clickSource.loop = false;
+            clickSource.playOnAwake = false;
+        }
+
+
         // Thiết lập volume
         musicSource.volume = musicVolume;
         sfxSource.volume = sfxVolume;
+        clickSource.volume = clickVolume;
 
         // Bắt đầu phát nhạc nền
         if (backgroundMusic != null)
@@ -73,9 +88,9 @@ public class SoundManager : Singleton<SoundManager>
 
     public void PlayClickSound()
     {
-        if (VFXSound != null)
+        if (ClickSound != null)
         {
-            sfxSource.PlayOneShot(VFXSound[0], sfxVolume);
+            clickSource.PlayOneShot(ClickSound, sfxVolume);
         }
     }
     public void PlayVFXSound(int soundIndex)
@@ -86,48 +101,4 @@ public class SoundManager : Singleton<SoundManager>
         }
     }
 
-
-    
-
-    // Các phương thức điều chỉnh âm lượng
-    public void SetMusicVolume(float volume)
-    {
-        musicVolume = Mathf.Clamp01(volume);
-        if (musicSource != null)
-        {
-            musicSource.volume = musicVolume;
-        }
-    }
-
-    public void SetSFXVolume(float volume)
-    {
-        sfxVolume = Mathf.Clamp01(volume);
-        if (sfxSource != null)
-        {
-            sfxSource.volume = sfxVolume;
-        }
-    }
-
-    public void ToggleMusic(bool isOn)
-    {
-        if (musicSource != null)
-        {
-            if (isOn)
-            {
-                musicSource.UnPause();
-            }
-            else
-            {
-                musicSource.Pause();
-            }
-        }
-    }
-
-    public void ToggleSFX(bool isOn)
-    {
-        if (sfxSource != null)
-        {
-            sfxSource.mute = !isOn;
-        }
-    }
 }

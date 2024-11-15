@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using Unity.Mathematics;
 using UnityEngine;
+using UnityEngine.Scripting.APIUpdating;
 
 public class Enemy : MonoBehaviour
 {
@@ -38,7 +39,15 @@ public class Enemy : MonoBehaviour
     [SerializeField] private SpriteRenderer Leg;
     [SerializeField] private SpriteRenderer Weapon;
 
-
+     [Header("Body Setting")]
+    [SerializeField] private GameObject bodyPrefab;
+    [SerializeField] private Transform body;
+    [SerializeField] private Transform head;
+    [SerializeField] private Transform weapon;
+    [SerializeField] private BoxCollider2D bodyColider;
+    public int score;
+    private List<GameObject> spawnedBodies = new List<GameObject>();
+     
     private Vector3 startPosition;
     private float currentRotation;
     
@@ -49,7 +58,8 @@ public class Enemy : MonoBehaviour
     private float targetImpactRotation; // Góc xoay mục tiêu khi va chạm
     private bool isRecoveringFromImpact; // Trạng thái đang hồi phục sau va chạm
     
-    public bool isDead => currentRotation > 90 || currentRotation < -90;
+    public bool isDead => math.abs(currentRotation) > 90 || isTouchingDeadzone;
+     private bool isTouchingDeadzone;
     public Animator anim;
 
     private void Start()
@@ -206,25 +216,42 @@ public class Enemy : MonoBehaviour
             if(((1 << collisionObject.layer) & WeaponLayer) != 0 )
             {
                 ApplyKnockback(collisionObject.transform.position);
+                if(currentRotation <-10)
+                {   
+                    moveDirection = 1;
+                }
             }
-        }else
+            
+        }
+        else
         {
           
              if (((1 << collisionObject.layer) & playerLayer) != 0)
             {
                 ApplyKnockback(collisionObject.transform.position);
                 ApplyImpactRotation(collisionObject.transform.position,20f);
+                if(currentRotation <-10)
+                {   
+                    moveDirection = 1;
+                    Debug.Log("?");
+                }
             }
             else if(((1 << collisionObject.layer) & WeaponLayer) != 0 )
             {
                 ApplyKnockback(collisionObject.transform.position);
-                ApplyImpactRotation(collisionObject.transform.position,impactRotationForce );
-                if (math.abs(currentRotation) <= 60)
+                if(currentRotation >-20)
                 {
-                    moveDirection = 1f;
-                  
+                    ApplyImpactRotation(collisionObject.transform.position,impactRotationForce );
+                }
+                if(currentRotation <-10)
+                {   
+                    moveDirection = 1;
                 }
             }
+        }
+        if(collisionObject.CompareTag("DeadZone"))
+        {
+            isTouchingDeadzone = true;
         }
        
 
@@ -233,8 +260,13 @@ public class Enemy : MonoBehaviour
     private void ApplyKnockback(Vector2 playerPosition)
     {
         Vector2 knockbackDirection = (transform.position - new Vector3(playerPosition.x, playerPosition.y, 0)).normalized;
+        
         rb.velocity = Vector2.zero;
         rb.AddForce(knockbackDirection * knockbackForce, ForceMode2D.Impulse);
+        if(currentRotation <-40)
+        {
+            rb.AddForce(new Vector2(1,0)* knockbackForce, ForceMode2D.Impulse);
+        }
         
         isKnockedBack = true;
         knockbackTimeCounter = knockbackTime;
@@ -260,10 +292,60 @@ public class Enemy : MonoBehaviour
         // Cập nhật rotation ngay lập tức
         childObject.localRotation = Quaternion.Euler(0, 0, currentRotation);
     }
+
+    void UpdateHeightBasedOnScore()
+    {
+        if(score <= 0) return;
+        // Xóa các bodyPrefab cũ
+        foreach (var spawnedBody in spawnedBodies)
+        {
+            Destroy(spawnedBody);
+        }
+        spawnedBodies.Clear();
+
+        // Spawn các bodyPrefab mới dựa trên điểm số
+        for (int i = 0; i < score; i++)
+        {
+            GameObject newBody = Instantiate(bodyPrefab, body);
+            newBody.GetComponent<SpriteRenderer>().sprite = data.skinData.body;
+            newBody.transform.localPosition = new Vector3(0, i*0.75f, 0); // Đặt vị trí theo trục Y
+            spawnedBodies.Add(newBody);
+        }
+        
+        // Cập nhật vị trí của Head
+        head.localPosition = new Vector3(head.localPosition.x, (score+1)*0.75f-0.3f, head.localPosition.z);
+        weapon.localPosition = new Vector3(weapon.localPosition.x, (score-1)*0.75f, weapon.localPosition.z);
+        // Lấy giá trị offset hiện tại
+        Vector2 offset = bodyColider.offset;
+
+        // Thay đổi giá trị Y của offset
+        offset.y = (3f * score + 7f) / 8f;
+        Debug.Log("" + offset.y);
+        // Gán lại giá trị offset đã thay đổi
+        bodyColider.offset = offset;
+
+        
+        // Lấy giá trị size hiện tại
+        Vector2 size = bodyColider.size;
+
+        // Thay đổi giá trị Y của size
+        size.y = (score+1)*0.75f-0.5f;
+
+        // Gán lại giá trị size đã thay đổi
+        bodyColider.size = size;
+       
+    }
+    
     public void Reset()
     {
         currentRotation = 0;
         transform.position = startPosition;
+        UpdateHeightBasedOnScore();
+        isTouchingDeadzone = false;
+        direction = 1;
+        //StartCoroutine(resetStartMove());
+        
     }
+   
     
 }

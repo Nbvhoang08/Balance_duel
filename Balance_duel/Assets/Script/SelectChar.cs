@@ -36,5 +36,7 @@ public class SelectChar : MonoBehaviour
         {
             data.skinData =data.dataList[index];        
         }
+        SoundManager.Instance.PlayClickSound();
+        //SoundManager.Instance.PlayVFXSound(2);
     }
 }
