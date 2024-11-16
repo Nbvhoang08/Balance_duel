@@ -187,7 +187,7 @@ public class PlayerMove : MonoBehaviour
             ApplyKnockback(collisionObject.transform.position);
           
             SoundManager.Instance.PlayVFXSound(2);
-            if(currentRotation <-10)
+            if(currentRotation <-40)
             {
                 ApplyImpactRotation(collisionObject.transform.position, 20);
             }
